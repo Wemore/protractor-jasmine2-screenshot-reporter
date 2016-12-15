@@ -177,9 +177,14 @@ function Jasmine2ScreenShotReporter(opts) {
 
   // write data into opts.dest as filename
   var writeScreenshot = function (data, filename) {
-    var stream = fs.createWriteStream(opts.dest + filename);
-    stream.write(new Buffer(data, 'base64'));
-    stream.end();
+      var screenshotPath = path.join(opts.dest, filename);
+      try {
+        var stream = fs.createWriteStream(screenshotPath);
+        stream.write(new Buffer(data, 'base64'));
+        stream.end();
+      } catch(e) {
+        console.error('Couldn\'t save screenshot: ' + screenshotPath);
+      }
   };
 
   var writeMetadata = function(data, filename) {
@@ -548,7 +553,7 @@ function Jasmine2ScreenShotReporter(opts) {
             metadataPath = path.join(opts.dest, file + '.json');
             mkdirp(path.dirname(metadataPath), function(err) {
               if(err) {
-                throw new Error('Could not create directory for ' + metadataPath);
+                console.error('Could not create directory for ' + metadataPath + '. Reason: ' + err);
               }
               writeMetadata(metadata, metadataPath);
             });
@@ -556,12 +561,20 @@ function Jasmine2ScreenShotReporter(opts) {
 
           mkdirp(path.dirname(screenshotPath), function(err) {
             if(err) {
-              throw new Error('Could not create directory for ' + screenshotPath);
+              console.error('Could not create directory for ' + screenshotPath + '. Reason: ' + err);
             }
             writeScreenshot(png, spec.filename[key]);
           });
+        }, function (err) {
+          if (err) {
+            console.error('Error getting browser capabilities. Reason: ' + err);
+          }
         });
-      });
+      }, function (err) {
+          if (err) {
+            console.error('Error taking screenshot. Reason: ' + err);
+          }
+        });
     });
   };
 
