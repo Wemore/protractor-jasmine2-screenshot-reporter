@@ -183,7 +183,7 @@ function Jasmine2ScreenShotReporter(opts) {
         stream.write(new Buffer(data, 'base64'));
         stream.end();
       } catch(e) {
-        console.error('Couldn\'t save screenshot: ' + screenshotPath);
+        console.error('Couldn\'t save screenshot: ' + screenshotPath + '. Reason: ' + e);
       }
   };
 
@@ -195,7 +195,7 @@ function Jasmine2ScreenShotReporter(opts) {
       stream.write(JSON.stringify(data, null, '\t'));
       stream.end();
     } catch(e) {
-      console.error('Couldn\'t save metadata: ' + filename);
+      console.error('Couldn\'t save metadata: ' + filename + '. Reason: ' + e);
     }
   };
 
